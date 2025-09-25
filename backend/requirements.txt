@@ -1,0 +1,10 @@
+fastapi                 # Web framework for building APIs
+uvicorn[standard]       # ASGI server to run FastAPI apps (production-ready)
+sqlalchemy              # ORM (Object Relational Mapper) for database models/queries
+pymysql                 # MySQL database driver (lets SQLAlchemy talk to MySQL)
+alembic                 # Database migrations (track schema changes)
+python-jose[cryptography] # JWT (JSON Web Tokens) for authentication & security
+passlib[bcrypt]         # Password hashing (securely store user passwords)
+python-multipart        # Handle file uploads (attachments/images in tasks)
+pydantic                # Data validation & serialization (used in FastAPI schemas)
+python-dotenv           # Load environment variables from a .env file (e.g., DB URL, secret key)

@@ -1,0 +1,50 @@
+# =========================
+# 📁 FRONTEND (ReactJS)
+# =========================
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.DS_Store
+
+# log files
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.parcel-cache/
+
+# =========================
+# 📁 BACKEND (FastAPI / Python)
+# =========================
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.env
+backend/env/
+backend/venv/
+backend/.venv/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python egg info
+*.egg-info/
+.eggs/
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+coverage.xml
+.cache
+
+# PyInstaller
+*.spec
