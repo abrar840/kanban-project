@@ -5,15 +5,16 @@ import './App.css'
 import {Routes, Route, Link} from "react-router-dom"
 import Login from '@/pages/Login'
 import SignUp from '@/pages/SignUp'
+import PublicRoute from '@/components/PublicRoutes'
 function App() {
   
 
   return (
-    <div ClassName="">
+    <div >
      <Routes>
         <Route path="/" element={<h1>Home Page</h1>} />
-        <Route path="/login" element={<Login />} />
-         <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={ <PublicRoute>  <Login />  </PublicRoute>} />
+         <Route path="/signup" element={<PublicRoute>  <SignUp /> </PublicRoute>     } />
       </Routes>
     </div>
   )
