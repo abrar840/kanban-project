@@ -4,6 +4,7 @@ from db.database import get_db
 import models.board as board_model
 import schemas.board as board_schema
 from services.utils import hash_password, verify_password, create_access_token
+from fastapi import HTTPException 
 router = APIRouter()
 
 
@@ -19,7 +20,7 @@ def addboard(board:board_schema.BoardCreate, db: Session=Depends(get_db)):
 
     db.add(new_board)
     db.commit()
-    db.refresh
+    db.refresh(db_board)
     return new_board
 
 
