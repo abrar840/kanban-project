@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from db.database import Base
+from sqlalchemy.orm import relationship
+
 
 class User(Base):
     __tablename__ = "users"
@@ -8,3 +10,5 @@ class User(Base):
     email = Column(String(255) , unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=True)
+
+    boards = relationship("Board", bacl_populates="user", cascade="all, delete-orphan")

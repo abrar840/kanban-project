@@ -11,3 +11,4 @@ class Task(Base):
     position = Column(Integer, nullable=False, index=True)
     board_id = Column(Integer, nullable=False, index=True)
     
+    column = relationship("Column", back_populates="tasks")
