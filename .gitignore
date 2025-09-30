@@ -11,6 +11,7 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/.parcel-cache/
+.venv/
 
 # =========================
 # 📁 BACKEND (FastAPI / Python)
