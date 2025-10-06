@@ -1,25 +1,28 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
-class TaskCreate(BaseModel):
-    title:str
-    description:str
-    column_id:int
-    position:int
-    user_id:int
-
-class TaskResponse(TaskCreate):
-    id:int
-    
+class TaskBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    position: int
 
 
-class GetTask(BaseModel):
-    id:int
-    user_id:int
+class TaskCreate(TaskBase):
+    column_id: int
+    board_id: int
+
+
+class TaskResponse(TaskBase):
+    id: int
+    column_id: int
+    board_id: int
+
+    class Config:
+        orm_mode = True
+
 
 class UpdateTask(BaseModel):
-    title:str
-    descriptiom:str
-    position:int
-    user_id:int
-
+    title: Optional[str] = None
+    description: Optional[str] = None
+    position: Optional[int] = None
