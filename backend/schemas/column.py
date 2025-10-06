@@ -1,17 +1,24 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
-class ColumnCreate(BaseModel):
-    title:str
-    board_id:int
-    position:int
+class ColumnBase(BaseModel):
+    title: str
+    position: int
 
-class ColumnResponse(ColumnCreate):
-    id:int
 
-class GetBoard(BaseModel):
-    board_id:int
+class ColumnCreate(ColumnBase):
+    board_id: int
+
+
+class ColumnResponse(ColumnBase):
+    id: int
+    board_id: int
+
+    class Config:
+        orm_mode = True
+
 
 class UpdateColumn(BaseModel):
-    title:str
-    position:int
+    title: Optional[str] = None
+    position: Optional[int] = None
