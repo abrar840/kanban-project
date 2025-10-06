@@ -20,8 +20,8 @@ app.add_middleware(
 
 # register routers 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(create_board.router, prefix="/create", tags=["Create"])
-app.include_router(column.router, prefix="/create", tags=["Create"])
+app.include_router(create_board.router, prefix="/create", tags=["Board"])
+app.include_router(column.router, prefix="/create", tags=["Column"])
 
 @app.get("/")
 def root():
