@@ -14,7 +14,10 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
+    "lucide-react": "^0.544.0",
     "react": "^19.1.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.2",
     "tailwindcss": "^4.1.13"
