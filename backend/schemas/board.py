@@ -4,12 +4,12 @@ from typing import Optional
  
 class BoardBase(BaseModel):
     name: str
-    total_cols: Optional[int] = None
+   
 
 
  
 class BoardCreate(BoardBase):
-    user_id: int
+      total_cols: Optional[int] = 3
 
 
  
