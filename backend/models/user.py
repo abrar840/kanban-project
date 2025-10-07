@@ -11,4 +11,4 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=True)
 
-    boards = relationship("Board", bacl_populates="user", cascade="all, delete-orphan")
+    boards = relationship("Board", back_populates="user", cascade="all, delete-orphan")
