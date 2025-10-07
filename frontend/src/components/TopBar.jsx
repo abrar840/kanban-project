@@ -1,6 +1,6 @@
 import React from 'react';
-import { Plus, Search } from 'lucide-react';
-const TopBar = () => {
+import { Plus, Search, Menu } from 'lucide-react';
+const TopBar = ({ onOpen }) => {
     return (
         <div className="w-full h-16">
             <div className="topbar flex items-center justify-between bg-blue-950 w-full h-full px-4">
@@ -32,7 +32,15 @@ const TopBar = () => {
                     </button>
                 </div>
 
-                <div className="people text-white h-[32px] w-[32px] bg-sky-300 rounded-2xl"><img src="" alt="" /></div>
+                <div className="people text-white h-[32px] w-[32px]  ">
+                    <button
+                        className="p-2 rounded not-first:"
+                        onClick={() => onOpen()}
+                        aria-label="Open sidebar"
+                    >
+                        <Menu size={24} color="white" />
+                    </button>
+                </div>
             </div>
         </div>
     );

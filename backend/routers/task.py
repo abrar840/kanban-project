@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 import models.task as task_model
 import schemas.task as task_schema
-
+from services.utils import get_current_user
 router = APIRouter()
 
 
 @router.post("/create-task", response_model=task_schema.TaskResponse)
-def create_task(task: task_schema.TaskCreate, db: Session = Depends(get_db)):
+def create_task(task: task_schema.TaskCreate, db: Session = Depends(get_db), user: str = Depends(get_current_user)):
     new_task = task_model.Task(
         title=task.title,
         description=task.description,

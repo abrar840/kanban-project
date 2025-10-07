@@ -5,7 +5,7 @@ from typing import Optional
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
-    position: int
+    position:  Optional[int] = None
 
 
 class TaskCreate(TaskBase):

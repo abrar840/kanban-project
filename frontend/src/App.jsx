@@ -4,17 +4,41 @@ import SignUp from "@/pages/SignUp";
 import Board from "@/pages/Board";
 import PublicRoute from "@/components/PublicRoutes";
 import TopBar from "@/components/TopBar"; // ✅ import your TopBar
-
+import React, { useState } from "react";
+import SideBar from "@/components/SideBar";
+import PrivateRoute from "./components/ProtectedRoute";
 function App() {
-  return (
-    <div className="min-h-screen w-[]">
-      <TopBar /> {/* ✅ Always visible at top */}
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [board,setBoard]=useState();
 
-      <Routes>
-        <Route path="/" element={<Board />} />
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
-      </Routes>
+  return (
+    <div className="relative min-h-screen">
+      {/* Topbar with hamburger menu at right */}
+
+      <TopBar onOpen={() => setSidebarOpen(true)} />
+      <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} setBoard={setBoard} />
+      <div className="min-h-screen w-[]">
+        <Routes>
+
+          <Route path="/" element= {<PrivateRoute> <Board board={board}/></PrivateRoute>} /> 
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            }
+          />
+        </Routes>
+      </div>
     </div>
   );
 }

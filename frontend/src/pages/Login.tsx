@@ -49,7 +49,7 @@ export function Login() {
 
 
   return (
-    <div className="flex items-center justify-center h-screen w-screen bg-blue-600">
+    <div className="flex items-center justify-center h-screen w-screen  ">
 
       <Card className="w-full max-w-lg">
         <CardHeader>
