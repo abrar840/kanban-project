@@ -47,7 +47,7 @@ def get_board(board_id: int,
 
 
 @router.put("/update-board/{board_id}", response_model=board_schema.Response,)
-def update_board(board_id: int, board: board_schema.UpdateBoard,  ):
+def update_board(board_id: int, board: board_schema.UpdateBoard, db: Session = Depends(get_db)):
     db_board = db.query(board_model.Board).filter(board_model.Board.id == board_id).first()
     if not db_board:
         raise HTTPException(status_code=404, detail="Board not found")

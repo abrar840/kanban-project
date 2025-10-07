@@ -17,7 +17,7 @@ def add_contributor(
     new_contributor = contributor_model.Contributor(
         email=contributor.email,
         board_id=contributor.board_id,
-        user_id=user_id  # use the ID from the token
+        
     )
     db.add(new_contributor)
     db.commit()
@@ -29,9 +29,10 @@ def add_contributor(
 @router.get("/get-contributors", response_model=list[contrinutor_schema.Response])
 def get_contributors(
     db: Session = Depends(get_db),
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    board_id: int = None 
 ):
-    contributors = db.query(contributor_model.Contributor).filter(contributor_model.Contributor.user_id == user_id).all()
+    contributors = db.query(contributor_model.Contributor).filter(contributor_model.Contributor.board_id == board_id).all()
     return contributors
 
 

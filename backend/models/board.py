@@ -11,5 +11,5 @@ class Board(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     user = relationship("User", back_populates="boards")
-    columns = relationship("Column", back_populates="board", cascade="all, delete-orphan")
+    columns = relationship("BoardColumn", back_populates="board", cascade="all, delete-orphan")
     contributors=relationship("Contributor", back_populates="board", cascade="all, delete-orphan")
