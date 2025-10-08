@@ -9,20 +9,20 @@ import SideBar from "@/components/SideBar";
 import PrivateRoute from "./components/ProtectedRoute";
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [board,setBoard]=useState();
-  const [addBoard,setAddBoard]=useState(null);
-  const [addMethod,setAddMethod]=useState(null);
+  const [board, setBoard] = useState();
+  const [addBoard, setAddBoard] = useState(null);
+  const [addMethod, setAddMethod] = useState(null);
 
   return (
     <div className="relative min-h-screen">
       {/* Topbar with hamburger menu at right */}
 
-      <TopBar onOpen={() => setSidebarOpen(true)}  addMethod={addMethod}/>
+      <TopBar onOpen={() => setSidebarOpen(true)} addMethod={addMethod} />
       <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} setBoard={setBoard} />
       <div className="min-h-screen w-[]">
         <Routes>
 
-          <Route path="/" element= {<PrivateRoute> <Board board={board}   setAddMethod={setAddMethod}/></PrivateRoute>} /> 
+          <Route path="/" element={<PrivateRoute> <Board board={board} setAddMethod={setAddMethod} /></PrivateRoute>} />
           <Route
             path="/login"
             element={

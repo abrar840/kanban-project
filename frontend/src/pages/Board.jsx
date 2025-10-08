@@ -4,7 +4,7 @@ import TopBar from "@/components/TopBar";
 import { X, Plus } from "lucide-react";
 import api from "@/lib/axios";
 import { buttonVariants } from "@/components/ui/button";
-const Board = ({ board,setAddMethod}) => {
+const Board = ({ board, setAddMethod }) => {
 
 
 
@@ -71,8 +71,8 @@ const Board = ({ board,setAddMethod}) => {
 
 
 
-    const onDragStart = (e, cardIndex, fromColumn) => {
-        setDraggedCard({ cardIndex, fromColumn });
+    const onDragStart = (cardIndex, task, fromColumn) => {
+        setDraggedCard({ task, cardIndex, fromColumn });
     };
 
     const onDragOver = (e, toColumn) => {
@@ -81,17 +81,17 @@ const Board = ({ board,setAddMethod}) => {
 
     //on drop move card to next column
 
-    const onDrop = (e, toColumn) => {
+    const onDrop = async (e, toColumn) => {
         e.preventDefault();
         if (!draggedCard) return;
-        const { cardIndex, fromColumn } = draggedCard;
+        const { cardIndex, task, fromColumn } = draggedCard;
         if (fromColumn === toColumn) return;
 
         setSavedData((prev) => {
-           
+
             const fromList = [...prev[fromColumn]];
             const [movedCard] = fromList.splice(cardIndex, 1); // remove card from old list
-               
+
             const toList = [...prev[toColumn], movedCard]; // add card to new list
 
             return {
@@ -99,9 +99,24 @@ const Board = ({ board,setAddMethod}) => {
                 [fromColumn]: fromList,
                 [toColumn]: toList,
             };
-        });
 
-        setDraggedCard(null);
+
+
+        });
+        if (draggedCard) {
+            console.log("eee", draggedCard.task)
+
+            const res = await api.put(`/update-task/${draggedCard.task.id}`, {
+                title: null,
+                description: null,
+                position: toColumn
+            });
+            if (res) {
+                alert("saved");
+                setTitle(res.data.name);
+            }
+        }
+
     };
 
     //NOW here on every cnae we will be saving record to dbn
@@ -219,11 +234,11 @@ const Board = ({ board,setAddMethod}) => {
 
     }
 
-useEffect(() => {
-  setAddMethod(() => initiateBoard); // pass function
-}, []);
+    useEffect(() => {
+        setAddMethod(() => initiateBoard); // pass function
+    }, []);
 
-    
+
 
 
     useEffect(() => {
@@ -265,9 +280,7 @@ useEffect(() => {
                 setDone(doneColumn?.title || "Done");
 
 
-                setAllColumns(columns);
 
-                console.log(allColumns);
 
 
                 const newSavedData = {
@@ -278,7 +291,7 @@ useEffect(() => {
                 columns.forEach(col => {
                     col.tasks?.forEach(task => {
                         if (newSavedData[task.position]) {
-                            newSavedData[task.position].push(task.title);
+                            newSavedData[task.position].push(task);
                         }
                     });
                 });
@@ -345,15 +358,15 @@ useEffect(() => {
                                 </div>
 
                                 {/* Render saved cards */}
-                                {savedData[1].map((title, index) => (
+                                {savedData[1].map((task, index) => (
                                     <div
                                         className="px-4 flex flex-col py-2"
                                         key={index}
                                         draggable
-                                        onDragStart={(e) => onDragStart(e, index, 1)}
+                                        onDragStart={(e) => onDragStart(index, task, 1)}
                                     >
                                         <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {title}
+                                            {task.title}
                                         </div>
                                     </div>
                                 ))}
@@ -414,16 +427,16 @@ useEffect(() => {
                                 </div>
 
                                 {/* Render saved cards */}
-                                {savedData[2].map((title, index) => (
+                                {savedData[2].map((task, index) => (
                                     <div
                                         className="px-4 flex flex-col py-2"
                                         key={index}
                                         draggable
-                                        onDragStart={(e) => onDragStart(e, index, 2)}
+                                        onDragStart={(e) => onDragStart(index, task, 2)}
                                     >
                                         {" "}
                                         <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {title}
+                                            {task.title}
                                         </div>
                                     </div>
                                 ))}
@@ -486,15 +499,15 @@ useEffect(() => {
                                 </div>
 
                                 {/* Render saved cards */}
-                                {savedData[3].map((title, index) => (
+                                {savedData[3].map((task, index) => (
                                     <div
                                         className="px-4 flex flex-col py-2"
                                         key={index}
                                         draggable
-                                        onDragStart={(e) => onDragStart(e, index, 3)}
+                                        onDragStart={(e) => onDragStart(index, task, 3)}
                                     >
                                         <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {title}
+                                            {task.title}
                                         </div>
                                     </div>
                                 ))}

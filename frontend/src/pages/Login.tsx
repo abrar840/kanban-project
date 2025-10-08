@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -9,20 +9,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Routes, Route, Link } from "react-router-dom"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Routes, Route, Link } from "react-router-dom";
 import api from "@/lib/axios";
-import { useState } from "react"
+import { useState } from "react";
 export function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-
     e.preventDefault();
     try {
       const res = await api.post("/auth/login", {
@@ -35,22 +33,13 @@ export function Login() {
       alert("login successful");
 
       window.location.href = "/";
-
     } catch (err) {
-      setError("invalid credentials")
+      setError("invalid credentials");
     }
-
-
-
-
-  }
-
-
-
+  };
 
   return (
     <div className="flex items-center justify-center h-screen w-screen  ">
-
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -58,7 +47,9 @@ export function Login() {
             Enter your email below to login to your account
           </CardDescription>
           <CardAction>
-            <Button variant="link"><Link to="/signup">Sign Up</Link></Button>
+            <Button variant="link">
+              <Link to="/signup">Sign Up</Link>
+            </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
@@ -84,10 +75,12 @@ export function Login() {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password"
+                <Input
+                  id="password"
                   type="password"
                   onChange={(e) => setPassword(e.target.value)}
-                  required />
+                  required
+                />
               </div>
               {error && <p className="text-red-500">{error}</p>}
             </div>
@@ -98,19 +91,13 @@ export function Login() {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-
           <Button variant="outline" className="w-full">
             Login with Google
           </Button>
         </CardFooter>
       </Card>
     </div>
-
-
-  )
-
-
-
+  );
 }
 
 export default Login;
