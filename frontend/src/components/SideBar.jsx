@@ -11,6 +11,11 @@ const SideBar = ({ open, onClose ,setBoard}) => {
     const [contribOpen, setContribOpen] = useState(false);
     const [contributions,setContributions] =useState([]);
 
+     const handleLogout = () => {
+            localStorage.removeItem("tokens");
+            localStorage.removeItem("selectedBoardId");
+            window.location.href = "/login";
+        };
 
     useEffect(() => {
         const fetchBoards = async () => {
@@ -147,7 +152,8 @@ const SideBar = ({ open, onClose ,setBoard}) => {
                 </ul>
             </div>
             <div className="p-6 border-t">
-                <button className="flex items-center gap-2 text-red-500 hover:text-red-700 w-full font-semibold py-2 px-3 rounded transition">
+                <button className="flex items-center gap-2 text-red-500 hover:text-red-700 w-full font-semibold py-2 px-3 rounded transition"
+                                        onClick={handleLogout}>
                     Logout
                 </button>
             </div>

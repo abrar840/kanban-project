@@ -7,7 +7,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 # === JWT Config ===
 SECRET_KEY = "superkey"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTE = 60
+ACCESS_TOKEN_EXPIRE_MINUTE = 300
 
 # === Password hashing ===
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

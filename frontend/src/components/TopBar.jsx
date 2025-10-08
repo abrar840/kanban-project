@@ -9,7 +9,7 @@ const TopBar = ({ onOpen, addMethod }) => {
     const popupRef = useRef(null);
     const [showPopup, setShowPopup] = useState(false);
     const [boardName, setBoardName] = useState(null);
-
+   
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -49,7 +49,7 @@ const TopBar = ({ onOpen, addMethod }) => {
                         <div
 
                             className="absolute top-11 left-235 mt-2 bg-white shadow-lg rounded-lg p-4 z-50 min-w-[220px] transition-transform duration-300"
-                            
+
                         >
                             <label className="block mb-2 text-sm font-medium text-gray-700">
                                 Enter board name
@@ -66,7 +66,7 @@ const TopBar = ({ onOpen, addMethod }) => {
                                 onClick={() => {
                                     if (addMethod && boardName?.trim()) {
                                         addMethod(boardName.trim());
-                                        
+
                                         setShowPopup(false);
                                     }
                                 }}
