@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 import models.contributor as contributor_model
 import schemas.contributor as contrinutor_schema
+import schemas.board as board_schema
+import models.board as board_model
 from services.utils import get_current_user
 
 
@@ -15,7 +17,7 @@ def add_contributor(
     user_id: str = Depends(get_current_user)
 ):
     new_contributor = contributor_model.Contributor(
-        email=contributor.email,
+        contributor_email=contributor.contributor_email,
         board_id=contributor.board_id,
         
     )
@@ -23,6 +25,36 @@ def add_contributor(
     db.commit()
     db.refresh(new_contributor)
     return new_contributor
+
+
+
+
+@router.get("/get-contributions", response_model=list[board_schema.Response])
+def get_contributed_boards(
+    db: Session = Depends(get_db),
+    user: str = Depends(get_current_user),
+):
+    
+    contributors = db.query(contributor_model.Contributor).filter(
+        contributor_model.Contributor.contributor_email == user.get("email")
+    ).all()
+
+   
+    board_ids = [contributor.board_id for contributor in contributors]
+
+    if not board_ids:
+        return []  # no boards found
+
+   
+    boards = db.query(board_model.Board).filter(
+        board_model.Board.id.in_(board_ids)
+    ).all()
+   
+    return boards
+
+
+
+
 
 
 

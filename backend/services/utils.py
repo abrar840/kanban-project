@@ -44,4 +44,4 @@ def verify_token(token: str) -> dict:
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
     token = credentials.credentials
     payload = verify_token(token)
-    return payload.get("sub")  # usually user_id
+    return payload  # usually user_id
