@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class ContributorBase(BaseModel):
-    email: str
+    contributor_email: str
     board_id: int
 
 class Create(ContributorBase):
@@ -21,5 +21,5 @@ class Response(ContributorBase):
 
 class UpdateContributor(BaseModel):
     role: Optional[str] = None
-    email: Optional[str] = None
+    contributor_email: Optional[str] = None
     board_id: Optional[int] = None

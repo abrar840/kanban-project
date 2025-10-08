@@ -10,7 +10,7 @@ class Task(Base):
     title = Column(String(255), nullable=False)
     description = Column(String(255), nullable=True)
     column_id = Column(Integer, ForeignKey("columns.id"), nullable=False, index=True)
-    position = Column(Integer, nullable=False, index=True)
+    position = Column(Integer, nullable=True, index=True)
     board_id = Column(Integer, ForeignKey("boards.id"), nullable=False, index=True)
 
     column = relationship("BoardColumn", back_populates="tasks")

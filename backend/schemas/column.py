@@ -14,8 +14,10 @@ class ColumnCreate(ColumnBase):
 class ColumnResponse(ColumnBase):
     id: int
     board_id: int
+    position: int
 
-    class Config:
+
+class Config:
         orm_mode = True
 
 
