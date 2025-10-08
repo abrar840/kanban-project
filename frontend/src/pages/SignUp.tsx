@@ -24,29 +24,31 @@ export function SignUp() {
     e.preventDefault();
 
     try {
+       localStorage.removeItem("selectedBoardId");
       const res = await api.post("/auth/signup", {
         full_name,
         email,
         password,
       });
 
-      alert("login successful");
+    
 
       window.location.href = "/";
     } catch (err) {
       setError("someting went wrong");
     }
   };
-
-  return (
-    <div className="flex items-center justify-center h-screen w-screen ">
-      <Card className="w-full max-w-lg">
+return (
+    <div className="flex items-center justify-center h-screen w-full bg-[#f5f5ff]">
+      <Card className="w-full max-w-lg shadow-lg border border-[#aabeed] bg-white">
         <CardHeader>
-          <CardTitle>SignUp</CardTitle>
-          <CardDescription>Enter your email below to register</CardDescription>
+          <CardTitle className="text-[#3a4e7c]">Sign Up</CardTitle>
+          <CardDescription className="text-[#6b7fa7]">
+            Enter your email below to register
+          </CardDescription>
           <CardAction>
             <Button variant="link">
-              <Link to="/login">Login</Link>
+              <Link to="/login" className="text-[#3a4e7c]">Login</Link>
             </Button>
           </CardAction>
         </CardHeader>
@@ -54,41 +56,47 @@ export function SignUp() {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Name</Label>
+                <Label htmlFor="name" className="text-[#3a4e7c]">Name</Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder=""
+                  placeholder="Your name"
                   onChange={(e) => setFull_name(e.target.value)}
                   required
+                  className="border border-[#aabeed] focus:border-[#3a4e7c] focus:ring-[#aabeed]"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-[#3a4e7c]">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="border border-[#aabeed] focus:border-[#3a4e7c] focus:ring-[#aabeed]"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-[#3a4e7c]">Password</Label>
                 </div>
                 <Input
                   id="password"
                   type="password"
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="border border-[#aabeed] focus:border-[#3a4e7c] focus:ring-[#aabeed]"
                 />
               </div>
               {error && <p className="text-red-500">{error}</p>}
             </div>
 
-            <Button type="submit" className="w-full mt-5">
-              SignUp
+            <Button
+              type="submit"
+              className="w-full mt-5 border border-[#aabeed] bg-[#aabeed] text-[#3a4e7c] font-semibold rounded-lg shadow hover:bg-[#8fa9ff] transition"
+            >
+              Sign Up
             </Button>
           </form>
         </CardContent>

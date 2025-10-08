@@ -1,7 +1,7 @@
 import { useState, useEffect, use } from "react";
 import React from "react";
 import TopBar from "@/components/TopBar";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Columns } from "lucide-react";
 import api from "@/lib/axios";
 import { buttonVariants } from "@/components/ui/button";
 const Board = ({ board, setAddMethod }) => {
@@ -112,7 +112,7 @@ const Board = ({ board, setAddMethod }) => {
                 position: toColumn
             });
             if (res) {
-                alert("saved");
+                // alert("saved");
                 setTitle(res.data.name);
             }
         }
@@ -134,7 +134,7 @@ const Board = ({ board, setAddMethod }) => {
                 id: currentBoard
             });
             if (res) {
-                alert("saved");
+                // alert("saved");
                 setTitle(res.data.name);
             }
         } else {
@@ -144,7 +144,7 @@ const Board = ({ board, setAddMethod }) => {
                     total_cols: 3,
                 });
                 if (res) {
-                    alert("saved");
+                    // alert("saved");
                     setTitle(res.data.name);
                     setCurrentBoard(res.data.id)
 
@@ -156,7 +156,7 @@ const Board = ({ board, setAddMethod }) => {
                 }
             } catch (err) {
                 console.error("Failed to save title:", err);
-                alert("failed to save board title.please try again");
+                // alert("failed to save board title.please try again");
             }
         }
     };
@@ -177,14 +177,14 @@ const Board = ({ board, setAddMethod }) => {
                 board_id: board_id
             });
             if (res) {
-                alert("saved");
+                // alert("saved");
                 setTitle(res.data.name);
                 setDataChangeTrigger(prev => prev + 1);
 
             }
         } catch (err) {
             console.error("Failed to save title:", err);
-            alert("failed to save board title.please try again");
+            // alert("failed to save board title.please try again");
         }
 
     };
@@ -216,7 +216,7 @@ const Board = ({ board, setAddMethod }) => {
 
             });
             if (res) {
-                alert("saved");
+        ("saved");
                 setDataChangeTrigger(prev => prev + 1);
             }
         } catch (err) {
@@ -270,7 +270,9 @@ const Board = ({ board, setAddMethod }) => {
                 setCurrentBoardData(data);
                 setTitle(data.name);
                 const columns = data.columns;
-
+                setAllColumns(columns);
+                
+              
                 const todoColumn = columns.find(col => col.position === 1) || null;
                 const inprogressColumn = columns.find(col => col.position === 2) || null;
                 const doneColumn = columns.find(col => col.position === 3) || null;
@@ -278,6 +280,8 @@ const Board = ({ board, setAddMethod }) => {
                 setTodo(todoColumn?.title || "ToDo");
                 setInprogress(inprogressColumn?.title || "In-Progress");
                 setDone(doneColumn?.title || "Done");
+
+                              setAllColumns(columns);
 
 
 
