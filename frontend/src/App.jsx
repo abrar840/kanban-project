@@ -18,7 +18,7 @@ function App() {
       {/* Topbar with hamburger menu at right */}
 
       <TopBar onOpen={() => setSidebarOpen(true)} addMethod={addMethod} />
-      <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} setBoard={setBoard} />
+      <SideBar open={sidebarOpen} onClose={() => setSidebarOpen(false)} setBoard={setBoard} currentBoard={board}/>
       <div className="min-h-screen w-[]">
         <Routes>
 
