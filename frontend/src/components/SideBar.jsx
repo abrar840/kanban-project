@@ -1,70 +1,91 @@
 import React, { useState, useEffect } from 'react'
 import { ChevronRight, X } from 'lucide-react'
 import api from '@/lib/axios';
-const SideBar = ({ open, onClose ,setBoard}) => {
+const SideBar = ({ open, onClose, setBoard, currentboard }) => {
     // Mock data arrays
     const [boards, setBoards] = useState([]);
-   
+
 
     // Dropdown state
     const [boardsOpen, setBoardsOpen] = useState(false);
     const [contribOpen, setContribOpen] = useState(false);
-    const [contributions,setContributions] =useState([]);
+    const [contributions, setContributions] = useState([]);
+    const [currentBoardId,setCurrentBoardId]=useState(currentboard);
 
-     const handleLogout = () => {
-            localStorage.removeItem("tokens");
-            localStorage.removeItem("selectedBoardId");
-            window.location.href = "/login";
-        };
+
+
+
+
+    const [showInput, setShowInput] = useState(false);
+    const [contributorEmail, setContributorEmail] = useState(null);
+
+    const handleLogout = () => {
+        localStorage.removeItem("tokens");
+        localStorage.removeItem("selectedBoardId");
+        window.location.href = "/login";
+    };
+
+    const setCurrentBoard=(id)=>{
+     setBoard(id);
+     setCurrentBoardId(id);
+    }
 
     useEffect(() => {
         const fetchBoards = async () => {
             try {
                 const res = await api.get("/get-boards");
                 if (res) {
-                   
+
                     setBoards(res.data);
 
                 }
-                   
+
             } catch (err) {
                 console.error("no record found", err);
-                
+
             }
         };
 
-         const fetchContributions = async () => {
+        const fetchContributions = async () => {
             try {
                 const res = await api.get("/get-contributions");
                 if (res) {
-                   
+
                     setContributions(res.data);
 
                 }
-                   
+
             } catch (err) {
                 console.error("no record found", err);
-                
+
             }
         };
         fetchContributions();
         fetchBoards(); // Call the async function
 
-      
-
-
-
-
-
-
-
+      if(currentBoardId==null){
+    setCurrentBoardId(localStorage.getItem("selectedBoardId"));
+}
+ 
 
     }, []);
 
 
 
 
+const addContributor = async(email)=>{
 
+ alert(currentBoardId)
+    const res = await api.post("/add-contributor",{
+        contributor_email:email,
+        board_id:currentBoardId,
+        role:"admin",
+    });
+
+    alert(res)
+
+
+}
 
 
 
@@ -110,7 +131,7 @@ const SideBar = ({ open, onClose ,setBoard}) => {
                                         {/* ...map boards here... */}
                                         {
                                             boards.map(board => (
-                                                <li key={board.id} className="py-1 px-2 hover:bg-gray-100 rounded cursor-pointer" onClick={()=>setBoard(board.id)}>
+                                                <li key={board.id} className="py-1 px-2 hover:bg-gray-100 rounded cursor-pointer" onClick={() => setCurrentBoard(board.id)}>
                                                     {board.name}
                                                 </li>
                                             ))}
@@ -134,11 +155,28 @@ const SideBar = ({ open, onClose ,setBoard}) => {
                         </button>
                         {contribOpen && (
                             <div className="ml-4 mt-2">
+                                <div className="add mb-2">
+                                    {!showInput && <button className='rounded border px-2 text-white bg-[#4CAF50]' onClick={() => setShowInput(true)}>+ Add More</button>}
+
+
+                                    {
+                                        showInput && (<div className="flex flex-col gap-2">
+                                            <div className="input flex flex-row items-center">
+                                                <input type="text" className='rounded border px-2' onChange={(e) => setContributorEmail(e.target.value)} />
+                                                <button onClick={() => setShowInput(false)}> <X size={24} color="#334155" /></button>
+
+                                            </div>
+                                            <div className="btn"><button className='rounded border px-2 text-white bg-[#4CAF50]' onClick={() => addContributor(contributorEmail)}>+</button></div>
+                                        </div>
+                                        )
+                                    }
+
+                                </div>
                                 {contributions.length === 0 ? (
                                     <p className="text-sm text-gray-400">No record found</p>
                                 ) : (
                                     <ul className="space-y-2">
-                                          {
+                                        {
                                             contributions.map(contribution => (
                                                 <li key={contribution.id} className="py-1 px-2 hover:bg-gray-100 rounded cursor-pointer">
                                                     {contribution.name}
@@ -153,7 +191,7 @@ const SideBar = ({ open, onClose ,setBoard}) => {
             </div>
             <div className="p-6 border-t">
                 <button className="flex items-center gap-2 text-red-500 hover:text-red-700 w-full font-semibold py-2 px-3 rounded transition"
-                                        onClick={handleLogout}>
+                    onClick={handleLogout}>
                     Logout
                 </button>
             </div>
