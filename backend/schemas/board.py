@@ -26,7 +26,13 @@ class UpdateBoard(BaseModel):
     id: int  # <-- You should include id here for update to know which board
     name: str | None = None
     total_cols: int | None = None
+class UserOut(BaseModel):
+    id: int
+    email: str
+    full_name: Optional[str] = None
 
+    class Config:
+        orm_mode = True
 
 class TaskOut(BaseModel):
     id: int
@@ -35,6 +41,8 @@ class TaskOut(BaseModel):
     position: int
     board_id: int
     column_id: int
+    user_id: Optional[int] = None
+    user: Optional[UserOut] = None
 
     class Config:
         orm_mode = True

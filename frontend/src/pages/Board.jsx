@@ -322,37 +322,46 @@ const Board = ({ board, setAddMethod }) => {
     }, [board, dataChangeTrigger]);
 
 
-const deleteBoard = async (board_id) => {
-    const res = await api.delete(`/delete-board/${board_id}`);
-    if (res) {
-        alert("board deleted");
-        setCurrentBoard(null);  
-        setBoard_id(null);
-        localStorage.removeItem("selectedBoardId");
-        setDataChangeTrigger(prev => prev + 1);
-        setMenuOpen(false);
+    const deleteBoard = async (board_id) => {
+        const res = await api.delete(`/delete-board/${board_id}`);
+        if (res) {
+            alert("board deleted");
+            setCurrentBoard(null);
+            setBoard_id(null);
+            localStorage.removeItem("selectedBoardId");
+            setDataChangeTrigger(prev => prev + 1);
+            setMenuOpen(false);
+        }
+
     }
 
-}
+    const onClose = () => {
+        setEditDialogOpen(false);
+        setDataChangeTrigger(prev => prev + 1)
+    }
 
-const onClose = () => {
-    setEditDialogOpen(false);
-    setDataChangeTrigger(prev => prev + 1)
-}
+    const onEdit = (id) => {
+        setId(id);
+        setEditDialogOpen(true);
 
-const onEdit = (id) => {
-    setId(id);
-    setEditDialogOpen(true);
-      
-}
+    }
+    const getInitials = (fullName) => {
+        if (!fullName) return "";
+
+        const words = fullName.trim().split(" ");
+        const first = words[0]?.[0] || "";
+        const second = words[1]?.[0] || "";
+
+        return `${first}${second}`.toUpperCase();
+    };
 
 
     return (
         <div className="w-full h-full bg-[rgb(143,169,255)]">
 
-           { editDialogOpen && <EditTask   onClose={onClose} editid={id}  />}
-               
-                        <div className="main w-full p-5 box-border">
+            {editDialogOpen && <EditTask onClose={onClose} editid={id} />}
+
+            <div className="main w-full p-5 box-border">
 
 
                 <div className="bg-[#aabeed] h-[100%] min-h-screen rounded-4xl p-5">
@@ -382,8 +391,8 @@ const onEdit = (id) => {
 
                                     {/* Menu items */}
                                     <ul className="flex flex-col gap-2 mt-2">
-                                        
-                                        <li className="bg-white p-3 rounded shadow hover:bg-gray-100 transition text-red-600" onClick={()=>deleteBoard(currentBoard)}>
+
+                                        <li className="bg-white p-3 rounded shadow hover:bg-gray-100 transition text-red-600" onClick={() => deleteBoard(currentBoard)}>
                                             Delete Board
                                         </li>
                                     </ul>
@@ -392,7 +401,7 @@ const onEdit = (id) => {
 
 
 
-                             
+
 
 
 
@@ -424,10 +433,15 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 1)}
-                                            onClick={()=>onEdit(task.id)}
+                                            onClick={() => onEdit(task.id)}
                                         >
-                                            <div className="  shadow rounded-lg bg-white text-black p-2">
-                                                {task.title}
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
                                             </div>
                                         </div>
                                     ))}
@@ -494,11 +508,16 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 2)}
-                                             onClick={()=>onEdit(task.id)}
+                                            onClick={() => onEdit(task.id)}
                                         >
                                             {" "}
-                                            <div className="  shadow rounded-lg bg-white text-black p-2">
-                                                {task.title}
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
                                             </div>
                                         </div>
                                     ))}
@@ -567,10 +586,15 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 3)}
-                                             onClick={()=>onEdit(task.id)}
+                                            onClick={() => onEdit(task.id)}
                                         >
-                                            <div className="  shadow rounded-lg bg-white text-black p-2">
-                                                {task.title}
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
                                             </div>
                                         </div>
                                     ))}
