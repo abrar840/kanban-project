@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi import  status
 from sqlalchemy.orm import Session
 from db.database import get_db
 import models.contributor as contributor_model
@@ -9,17 +10,34 @@ from services.utils import get_current_user
 import models.user as user_model
 
 router = APIRouter()
-
 @router.post("/add-contributor", response_model=contributor_schema.Response)
 def add_contributor(
     contributor: contributor_schema.Create,
     db: Session = Depends(get_db),
-    user_id: str = Depends(get_current_user)
+    user: dict = Depends(get_current_user)   
 ):
+    
+    if contributor.contributor_email == user["email"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot add yourself as a contributor."
+        )
+ 
+    existing = db.query(contributor_model.Contributor).filter(
+        contributor_model.Contributor.board_id == contributor.board_id,
+        contributor_model.Contributor.contributor_email == contributor.contributor_email
+    ).first()
+
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This contributor is already added to the board."
+        )
+
+     
     new_contributor = contributor_model.Contributor(
         contributor_email=contributor.contributor_email,
         board_id=contributor.board_id,
-        
     )
     db.add(new_contributor)
     db.commit()

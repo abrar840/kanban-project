@@ -5,6 +5,7 @@ import { X, Plus, Columns } from "lucide-react";
 import api from "@/lib/axios";
 import { buttonVariants } from "@/components/ui/button";
 import { MoreVertical } from 'lucide-react';
+import EditTask from "@/components/models/EditTask";
 const Board = ({ board, setAddMethod }) => {
 
 
@@ -24,7 +25,8 @@ const Board = ({ board, setAddMethod }) => {
     const [allColumns, setAllColumns] = useState([]);
     const [dataChangeTrigger, setDataChangeTrigger] = useState(0);
     const [menuOpen, setMenuOpen] = useState(false);
-
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [id, setId] = useState(null);
     const [inputValues, setInputValues] = useState({
         1: "",
         2: "",
@@ -333,16 +335,24 @@ const deleteBoard = async (board_id) => {
 
 }
 
+const onClose = () => {
+    setEditDialogOpen(false);
+}
 
+const onEdit = (id) => {
+    setId(id);
+    setEditDialogOpen(true);
+     
+}
 
 
 
     return (
         <div className="w-full h-full bg-[rgb(143,169,255)]">
 
-
-
-            <div className="main w-full p-5 box-border">
+           
+               
+                        <div className="main w-full p-5 box-border">
 
 
                 <div className="bg-[#aabeed] h-[100%] min-h-screen rounded-4xl p-5">
@@ -414,6 +424,7 @@ const deleteBoard = async (board_id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 1)}
+                                            onClick={onEdit}
                                         >
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
                                                 {task.title}
@@ -483,6 +494,7 @@ const deleteBoard = async (board_id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 2)}
+                                             onClick={onEdit}
                                         >
                                             {" "}
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
@@ -555,6 +567,7 @@ const deleteBoard = async (board_id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 3)}
+                                             onClick={onEdit}
                                         >
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
                                                 {task.title}

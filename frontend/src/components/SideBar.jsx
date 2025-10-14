@@ -14,7 +14,7 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
     const [showInput, setShowInput] = useState(false);
     const [contributorEmail, setContributorEmail] = useState("");
     const [currentBoardId, setCurrentBoardId] = useState(currentboard);
-
+    const[refresh,setRefresh]=useState(false);
     const handleLogout = () => {
         localStorage.removeItem("tokens");
         localStorage.removeItem("selectedBoardId");
@@ -45,7 +45,7 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
             }
         };
 
-        
+      
 
         fetchBoards();
         fetchContributions();
@@ -55,7 +55,7 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
             const savedId = localStorage.getItem("selectedBoardId");
             if (savedId) setCurrentBoardId(savedId);
         }
-    }, []);
+    }, [refresh]);
 
 
 
@@ -63,16 +63,16 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
 
 const fetchContributors = async () => {
             try {
-                const res = await api.get(`/get-contributors/${1}`); // Replace with currentBoardId if dynamic
+                const res = await api.get(`/get-contributors/${currentBoardId}`); // Replace with currentBoardId if dynamic
                 setContributors(res.data);
             } catch (err) {
                 console.error("Failed to fetch contributors", err);
             }
         };
-
+      
   fetchContributors();
 
-}, [currentBoardId]);
+}, [currentBoardId,refresh]);
 
 
 
@@ -89,10 +89,16 @@ const fetchContributors = async () => {
                 role: "admin",
             });
             alert("Contributor added successfully");
+            setRefresh((prev) => !prev);
+            setShowInput(false);
+
         } catch (err) {
-            alert("Failed to add contributor");
-            console.error(err);
+            const errorMessage = err.response?.data?.detail || "Something went wrong";
+        alert(errorMessage);
         }
+
+
+        
     };
 
     return (
