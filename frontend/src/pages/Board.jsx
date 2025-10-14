@@ -4,6 +4,7 @@ import TopBar from "@/components/TopBar";
 import { X, Plus, Columns } from "lucide-react";
 import api from "@/lib/axios";
 import { buttonVariants } from "@/components/ui/button";
+import { MoreVertical } from 'lucide-react';
 const Board = ({ board, setAddMethod }) => {
 
 
@@ -22,6 +23,7 @@ const Board = ({ board, setAddMethod }) => {
     const [board_id, setBoard_id] = useState(board);
     const [allColumns, setAllColumns] = useState([]);
     const [dataChangeTrigger, setDataChangeTrigger] = useState(0);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const [inputValues, setInputValues] = useState({
         1: "",
@@ -318,10 +320,18 @@ const Board = ({ board, setAddMethod }) => {
     }, [board, dataChangeTrigger]);
 
 
+const deleteBoard = async (board_id) => {
+    const res = await api.delete(`/delete-board/${board_id}`);
+    if (res) {
+        alert("board deleted");
+        setCurrentBoard(null);  
+        setBoard_id(null);
+        localStorage.removeItem("selectedBoardId");
+        setDataChangeTrigger(prev => prev + 1);
+        setMenuOpen(false);
+    }
 
-
-
-
+}
 
 
 
@@ -331,13 +341,14 @@ const Board = ({ board, setAddMethod }) => {
         <div className="w-full h-full bg-[rgb(143,169,255)]">
 
 
+
             <div className="main w-full p-5 box-border">
 
 
                 <div className="bg-[#aabeed] h-[100%] min-h-screen rounded-4xl p-5">
                     {currentBoard &&
                         <>
-                            <div className="title px-3 ">
+                            <div className="title px-3  **: flex flex-row justify-between items-center">
                                 <input
                                     type="text"
                                     value={title}
@@ -345,7 +356,40 @@ const Board = ({ board, setAddMethod }) => {
                                     onChange={(e) => setTitle(e.target.value)}
                                     onBlur={() => saveTitleToDatabase(title)}
                                 />
+
+                                <div className="btn"><button className="" onClick={() => setMenuOpen(true)} ><MoreVertical /></button>
+                                </div>
                             </div>
+
+                            {menuOpen && (
+                                <div className="menu absolute top-28 right-17 w-64 bg-[#f1f2f4] p-4 rounded-lg shadow-lg z-50">
+                                    {/* Close button */}
+                                    <div className="flex justify-end">
+                                        <button onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-gray-800">
+                                            <X />
+                                        </button>
+                                    </div>
+
+                                    {/* Menu items */}
+                                    <ul className="flex flex-col gap-2 mt-2">
+                                        
+                                        <li className="bg-white p-3 rounded shadow hover:bg-gray-100 transition text-red-600" onClick={()=>deleteBoard(currentBoard)}>
+                                            Delete Board
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+
+
+
+                             
+
+
+
+
+
+
+
                             <div className="container flex md:flex-row flex-col items-start gap-5 p-2">
                                 {/* Column 1: ToDo */}
                                 <div

@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Connection string
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:@localhost:3306/kanban_db"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:password@localhost:3306/kanban_db"
+
  
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

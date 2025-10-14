@@ -23,3 +23,12 @@ class UpdateContributor(BaseModel):
     role: Optional[str] = None
     contributor_email: Optional[str] = None
     board_id: Optional[int] = None
+
+class allResponse(BaseModel):
+    id: int
+    email: str
+    name: Optional[str] = None
+    role: Optional[str] = "admin"
+
+    class Config:
+        orm_mode = True
