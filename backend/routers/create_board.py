@@ -71,3 +71,15 @@ def update_board(board_id: int, board: board_schema.UpdateBoard, db: Session = D
     db.commit()
     db.refresh(db_board)
     return db_board
+
+
+@router.delete("/delete-board/{board_id}")
+def delete_board(board_id: int, db: Session = Depends(get_db)):
+    db_board = db.query(board_model.Board).filter(board_model.Board.id == board_id).first()
+    if not db_board:
+        raise HTTPException(status_code=404, detail="Board not found")
+
+    db.delete(db_board)
+    db.commit()
+    return {"detail": "Board deleted successfully"}
+
