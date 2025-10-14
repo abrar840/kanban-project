@@ -337,20 +337,20 @@ const deleteBoard = async (board_id) => {
 
 const onClose = () => {
     setEditDialogOpen(false);
+    setDataChangeTrigger(prev => prev + 1)
 }
 
 const onEdit = (id) => {
     setId(id);
     setEditDialogOpen(true);
-     
+      
 }
-
 
 
     return (
         <div className="w-full h-full bg-[rgb(143,169,255)]">
 
-           
+           { editDialogOpen && <EditTask   onClose={onClose} editid={id}  />}
                
                         <div className="main w-full p-5 box-border">
 
@@ -424,7 +424,7 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 1)}
-                                            onClick={onEdit}
+                                            onClick={()=>onEdit(task.id)}
                                         >
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
                                                 {task.title}
@@ -494,7 +494,7 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 2)}
-                                             onClick={onEdit}
+                                             onClick={()=>onEdit(task.id)}
                                         >
                                             {" "}
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
@@ -567,7 +567,7 @@ const onEdit = (id) => {
                                             key={index}
                                             draggable
                                             onDragStart={(e) => onDragStart(index, task, 3)}
-                                             onClick={onEdit}
+                                             onClick={()=>onEdit(task.id)}
                                         >
                                             <div className="  shadow rounded-lg bg-white text-black p-2">
                                                 {task.title}
