@@ -12,5 +12,7 @@ class Task(Base):
     column_id = Column(Integer, ForeignKey("columns.id"), nullable=False, index=True)
     position = Column(Integer, nullable=True, index=True)
     board_id = Column(Integer, ForeignKey("boards.id"), nullable=False, index=True)
-
+    user_id =Column(Integer,ForeignKey("users.id"), nullable=True, index=True)
+    
     column = relationship("BoardColumn", back_populates="tasks")
+    user = relationship("User", back_populates="tasks")

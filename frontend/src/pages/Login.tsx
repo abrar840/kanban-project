@@ -34,6 +34,7 @@ export function Login() {
        
 
       window.location.href = "/";
+      
     } catch (err) {
       setError("invalid credentials");
     }

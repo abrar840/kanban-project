@@ -97,13 +97,13 @@ def get_contributors(
         )
 
        
-    result.append({
-        "id": contrib.id,
+        result.append({
+        "id": contributor.id,
         "email": contrib.contributor_email,
-        "name": contributor.full_name if user else None,
+        "name": contributor.full_name if contributor else None,
         "role": contrib.role,
         # Add more fields if needed
-    })
+         })
 
     return result
 

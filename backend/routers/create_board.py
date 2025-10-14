@@ -44,6 +44,8 @@ def get_board(board_id: int, db: Session = Depends(get_db)):
     db_board = db.query(board_model.Board).options(
         joinedload(board_model.Board.columns)
         .joinedload(BoardColumn.tasks)
+        .joinedload(Task.user)
+         
     ).filter(board_model.Board.id == board_id).first()
 
     if not db_board:
