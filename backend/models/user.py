@@ -12,3 +12,4 @@ class User(Base):
     full_name = Column(String(255), nullable=True)
 
     boards = relationship("Board", back_populates="user", cascade="all, delete-orphan")
+    tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan")

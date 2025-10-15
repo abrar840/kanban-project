@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from db.database import get_db
 import models.task as task_model
 import schemas.task as task_schema
 from services.utils import get_current_user
+from models.task import Task
+from typing import List
+
 router = APIRouter()
 
 
@@ -25,14 +28,20 @@ def create_task(task: task_schema.TaskCreate, db: Session = Depends(get_db), use
 
 @router.get("/get-task-by-id/{task_id}", response_model=task_schema.TaskResponse)
 def get_task(task_id: int, db: Session = Depends(get_db)):
-    db_task = db.query(task_model.Task).filter(task_model.Task.id == task_id).first()
+    db_task = db.query(task_model.Task).options(
+        
+        joinedload(Task.user)
+         
+    ).filter(task_model.Task.id == task_id).first()
     if not db_task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return db_task
 
-@router.get("/get-task-by-boardid/{board_id}", response_model=task_schema.TaskResponse)
+
+
+@router.get("/get-task-by-boardid/{board_id}", response_model=List[task_schema.TaskResponse])
 def get_task(board_id: int, db: Session = Depends(get_db)):
-    db_task = db.query(task_model.Task).filter(task_model.Task.board_id == board_id).first()
+    db_task = db.query(task_model.Task).filter(task_model.Task.board_id == board_id).all()
     if not db_task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return db_task
@@ -51,6 +60,10 @@ def update_task(task_id: int, task: task_schema.UpdateTask, db: Session = Depend
         db_task.description = task.description
     if task.position is not None:
         db_task.position = task.position
+  
+    if hasattr(task, "user_id"):
+        db_task.user_id = task.user_id  
+
 
     db.commit()
     db.refresh(db_task)

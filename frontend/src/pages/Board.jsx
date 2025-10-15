@@ -4,6 +4,8 @@ import TopBar from "@/components/TopBar";
 import { X, Plus, Columns } from "lucide-react";
 import api from "@/lib/axios";
 import { buttonVariants } from "@/components/ui/button";
+import { MoreVertical } from 'lucide-react';
+import EditTask from "@/components/models/EditTask";
 const Board = ({ board, setAddMethod }) => {
 
 
@@ -22,7 +24,9 @@ const Board = ({ board, setAddMethod }) => {
     const [board_id, setBoard_id] = useState(board);
     const [allColumns, setAllColumns] = useState([]);
     const [dataChangeTrigger, setDataChangeTrigger] = useState(0);
-
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [id, setId] = useState(null);
     const [inputValues, setInputValues] = useState({
         1: "",
         2: "",
@@ -113,7 +117,7 @@ const Board = ({ board, setAddMethod }) => {
             });
             if (res) {
                 // alert("saved");
-                setTitle(res.data.name);
+                // setTitle(res.data.name);
             }
         }
 
@@ -216,7 +220,7 @@ const Board = ({ board, setAddMethod }) => {
 
             });
             if (res) {
-        ("saved");
+                ("saved");
                 setDataChangeTrigger(prev => prev + 1);
             }
         } catch (err) {
@@ -271,8 +275,8 @@ const Board = ({ board, setAddMethod }) => {
                 setTitle(data.name);
                 const columns = data.columns;
                 setAllColumns(columns);
-                
-              
+
+
                 const todoColumn = columns.find(col => col.position === 1) || null;
                 const inprogressColumn = columns.find(col => col.position === 2) || null;
                 const doneColumn = columns.find(col => col.position === 3) || null;
@@ -281,7 +285,7 @@ const Board = ({ board, setAddMethod }) => {
                 setInprogress(inprogressColumn?.title || "In-Progress");
                 setDone(doneColumn?.title || "Done");
 
-                              setAllColumns(columns);
+                setAllColumns(columns);
 
 
 
@@ -318,245 +322,324 @@ const Board = ({ board, setAddMethod }) => {
     }, [board, dataChangeTrigger]);
 
 
+    const deleteBoard = async (board_id) => {
+        const res = await api.delete(`/delete-board/${board_id}`);
+        if (res) {
+            alert("board deleted");
+            setCurrentBoard(null);
+            setBoard_id(null);
+            localStorage.removeItem("selectedBoardId");
+            setDataChangeTrigger(prev => prev + 1);
+            setMenuOpen(false);
+        }
 
+    }
 
+    const onClose = () => {
+        setEditDialogOpen(false);
+        setDataChangeTrigger(prev => prev + 1)
+    }
 
+    const onEdit = (id) => {
+        setId(id);
+        setEditDialogOpen(true);
 
+    }
+    const getInitials = (fullName) => {
+        if (!fullName) return "";
 
+        const words = fullName.trim().split(" ");
+        const first = words[0]?.[0] || "";
+        const second = words[1]?.[0] || "";
 
-
+        return `${first}${second}`.toUpperCase();
+    };
 
 
     return (
         <div className="w-full h-full bg-[rgb(143,169,255)]">
 
+            {editDialogOpen && <EditTask onClose={onClose} editid={id} />}
 
             <div className="main w-full p-5 box-border">
 
 
                 <div className="bg-[#aabeed] h-[100%] min-h-screen rounded-4xl p-5">
-                    {currentBoard && <>     <div className="title px-3">
-                        <input
-                            type="text"
-                            value={title}
-                            className="focus:outline-none focus:ring-2 focus:ring-blue-500   text-black  font-semibold text-lg rounded px-2"
-                            onChange={(e) => setTitle(e.target.value)}
-                            onBlur={() => saveTitleToDatabase(title)}
-                        />
-                    </div>
-                        <div className="container flex md:flex-row flex-col items-start gap-5 p-2">
-                            {/* Column 1: ToDo */}
-                            <div
-                                className="col1 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
-                                onDragOver={onDragOver}
-                                onDrop={(e) => onDrop(e, 1)}
-                            >
-                                <div className="title w-full p-2">
-                                    <input
-                                        type="text"
-                                        value={todo}
-                                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                        onChange={(e) => setTodo(e.target.value)}
-                                        onBlur={() => savecolumnToDatabase(todo, 1, board_id)}
-                                    />
-                                </div>
+                    {currentBoard &&
+                        <>
+                            <div className="title px-3  **: flex flex-row justify-between items-center">
+                                <input
+                                    type="text"
+                                    value={title}
+                                    className="focus:outline-none focus:ring-2 focus:ring-blue-500   text-black  font-semibold text-lg rounded px-2"
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    onBlur={() => saveTitleToDatabase(title)}
+                                />
 
-                                {/* Render saved cards */}
-                                {savedData[1].map((task, index) => (
-                                    <div
-                                        className="px-4 flex flex-col py-2"
-                                        key={index}
-                                        draggable
-                                        onDragStart={(e) => onDragStart(index, task, 1)}
-                                    >
-                                        <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {task.title}
-                                        </div>
-                                    </div>
-                                ))}
-
-                                <div className="mt-auto">
-                                    {activeCard !== 1 && (
-                                        <div className="btn px-4 py-2">
-                                            <button
-                                                className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
-                                                onClick={() => setActiveCard(1)}
-                                            >
-                                                <Plus /> Add a Card
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {activeCard === 1 && (
-                                        <div className="wrapper px-4 flex flex-col">
-                                            <div className="input">
-                                                <input
-                                                    type="text"
-                                                    value={inputValues[1]}
-                                                    onChange={(e) => handleInputChange(e, 1)}
-
-                                                    className="border-2 border-[#4CAF50] focus:border-none hover:border-none w-full h-10 rounded-lg p-2 focus:outline-none bg-white shadow-sm"
-                                                />
-                                            </div>
-                                            <div className="btn flex flex-row gap-2 py-2">
-                                                <button
-                                                    className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
-                                                    onClick={() => handleAdd(1)}
-                                                >
-                                                    Add Card
-                                                </button>
-                                                <button onClick={() => setActiveCard(null)}>
-                                                    <X />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
+                                <div className="btn"><button className="" onClick={() => setMenuOpen(true)} ><MoreVertical /></button>
                                 </div>
                             </div>
 
-                            {/* Column 2: In-Progress */}
-                            <div
-                                className="col2 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
-                                onDragOver={onDragOver}
-                                onDrop={(e) => onDrop(e, 2)}
-                            >
-                                <div className="title w-full p-2">
-                                    <input
-                                        type="text"
-                                        value={inprogress}
-                                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                        onChange={(e) => setInprogress(e.target.value)}
-                                        onBlur={() => savecolumnToDatabase(inprogress, 2, board_id)}
-                                    />
+                            {menuOpen && (
+                                <div className="menu absolute top-28 right-17 w-64 bg-[#f1f2f4] p-4 rounded-lg shadow-lg z-50">
+                                    {/* Close button */}
+                                    <div className="flex justify-end">
+                                        <button onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-gray-800">
+                                            <X />
+                                        </button>
+                                    </div>
+
+                                    {/* Menu items */}
+                                    <ul className="flex flex-col gap-2 mt-2">
+
+                                        <li className="bg-white p-3 rounded shadow hover:bg-gray-100 transition text-red-600" onClick={() => deleteBoard(currentBoard)}>
+                                            Delete Board
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+
+
+
+
+
+
+
+
+
+
+
+                            <div className="container flex md:flex-row flex-col items-start gap-5 p-2">
+                                {/* Column 1: ToDo */}
+                                <div
+                                    className="col1 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
+                                    onDragOver={onDragOver}
+                                    onDrop={(e) => onDrop(e, 1)}
+                                >
+                                    <div className="title w-full p-2">
+                                        <input
+                                            type="text"
+                                            value={todo}
+                                            className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                            onChange={(e) => setTodo(e.target.value)}
+                                            onBlur={() => savecolumnToDatabase(todo, 1, board_id)}
+                                        />
+                                    </div>
+
+                                    {/* Render saved cards */}
+                                    {savedData[1].map((task, index) => (
+                                        <div
+                                            className="px-4 flex flex-col py-2"
+                                            key={index}
+                                            draggable
+                                            onDragStart={(e) => onDragStart(index, task, 1)}
+                                            onClick={() => onEdit(task.id)}
+                                        >
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className="mt-auto">
+                                        {activeCard !== 1 && (
+                                            <div className="btn px-4 py-2">
+                                                <button
+                                                    className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
+                                                    onClick={() => setActiveCard(1)}
+                                                >
+                                                    <Plus /> Add a Card
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {activeCard === 1 && (
+                                            <div className="wrapper px-4 flex flex-col">
+                                                <div className="input">
+                                                    <input
+                                                        type="text"
+                                                        value={inputValues[1]}
+                                                        onChange={(e) => handleInputChange(e, 1)}
+
+                                                        className="border-2 border-[#4CAF50] focus:border-none hover:border-none w-full h-10 rounded-lg p-2 focus:outline-none bg-white shadow-sm"
+                                                    />
+                                                </div>
+                                                <div className="btn flex flex-row gap-2 py-2">
+                                                    <button
+                                                        className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
+                                                        onClick={() => handleAdd(1)}
+                                                    >
+                                                        Add Card
+                                                    </button>
+                                                    <button onClick={() => setActiveCard(null)}>
+                                                        <X />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Render saved cards */}
-                                {savedData[2].map((task, index) => (
-                                    <div
-                                        className="px-4 flex flex-col py-2"
-                                        key={index}
-                                        draggable
-                                        onDragStart={(e) => onDragStart(index, task, 2)}
-                                    >
-                                        {" "}
-                                        <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {task.title}
-                                        </div>
+                                {/* Column 2: In-Progress */}
+                                <div
+                                    className="col2 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
+                                    onDragOver={onDragOver}
+                                    onDrop={(e) => onDrop(e, 2)}
+                                >
+                                    <div className="title w-full p-2">
+                                        <input
+                                            type="text"
+                                            value={inprogress}
+                                            className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                            onChange={(e) => setInprogress(e.target.value)}
+                                            onBlur={() => savecolumnToDatabase(inprogress, 2, board_id)}
+                                        />
                                     </div>
-                                ))}
 
-                                <div className="mt-auto">
-                                    {activeCard !== 2 && (
-                                        <div className="btn px-4 py-2">
-                                            <button
-                                                className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
-                                                onClick={() => setActiveCard(2)}
-                                            >
-                                                <Plus /> Add a Card
-                                            </button>
+                                    {/* Render saved cards */}
+                                    {savedData[2].map((task, index) => (
+                                        <div
+                                            className="px-4 flex flex-col py-2"
+                                            key={index}
+                                            draggable
+                                            onDragStart={(e) => onDragStart(index, task, 2)}
+                                            onClick={() => onEdit(task.id)}
+                                        >
+                                            {" "}
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
+                                            </div>
                                         </div>
-                                    )}
+                                    ))}
 
-                                    {activeCard === 2 && (
-                                        <div className="wrapper px-4 flex flex-col">
-                                            <div className="input">
-                                                <input
-                                                    type="text"
-                                                    value={inputValues[2]}
-                                                    onChange={(e) => handleInputChange(e, 2)}
-                                                    className="border-2 border-[#4CAF50] 
+                                    <div className="mt-auto">
+                                        {activeCard !== 2 && (
+                                            <div className="btn px-4 py-2">
+                                                <button
+                                                    className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
+                                                    onClick={() => setActiveCard(2)}
+                                                >
+                                                    <Plus /> Add a Card
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {activeCard === 2 && (
+                                            <div className="wrapper px-4 flex flex-col">
+                                                <div className="input">
+                                                    <input
+                                                        type="text"
+                                                        value={inputValues[2]}
+                                                        onChange={(e) => handleInputChange(e, 2)}
+                                                        className="border-2 border-[#4CAF50] 
                         focus:border-none hover:border-none 
                         w-full h-10 rounded-lg p-2 focus:outline-none 
                         bg-white shadow-sm"
-                                                />
+                                                    />
+                                                </div>
+                                                <div className="btn flex flex-row gap-2 py-2">
+                                                    <button
+                                                        className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
+                                                        onClick={() => handleAdd(2)}
+                                                    >
+                                                        Add Card
+                                                    </button>
+                                                    <button onClick={() => setActiveCard(null)}>
+                                                        <X />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="btn flex flex-row gap-2 py-2">
-                                                <button
-                                                    className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
-                                                    onClick={() => handleAdd(2)}
-                                                >
-                                                    Add Card
-                                                </button>
-                                                <button onClick={() => setActiveCard(null)}>
-                                                    <X />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Column 3: Done */}
-                            <div
-                                className="col3 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
-                                onDragOver={onDragOver}
-                                onDrop={(e) => onDrop(e, 3)}
-                            >
-                                <div className="title w-full p-2">
-                                    <input
-                                        type="text"
-                                        value={done}
-                                        className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                                        onChange={(e) => setDone(e.target.value)}
-                                        onBlur={() => savecolumnToDatabase(done, 3, board_id)}
-                                    />
-                                </div>
-
-                                {/* Render saved cards */}
-                                {savedData[3].map((task, index) => (
-                                    <div
-                                        className="px-4 flex flex-col py-2"
-                                        key={index}
-                                        draggable
-                                        onDragStart={(e) => onDragStart(index, task, 3)}
-                                    >
-                                        <div className="  shadow rounded-lg bg-white text-black p-2">
-                                            {task.title}
-                                        </div>
+                                        )}
                                     </div>
-                                ))}
+                                </div>
 
-                                <div className="mt-auto">
-                                    {activeCard !== 3 && (
-                                        <div className="btn px-4 py-2">
-                                            <button
-                                                className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
-                                                onClick={() => setActiveCard(3)}
-                                            >
-                                                <Plus /> Add a Card
-                                            </button>
+                                {/* Column 3: Done */}
+                                <div
+                                    className="col3 bg-[#f1f2f4] w-full md:w-1/3 rounded-lg min-h-[150px] flex flex-col h-full"
+                                    onDragOver={onDragOver}
+                                    onDrop={(e) => onDrop(e, 3)}
+                                >
+                                    <div className="title w-full p-2">
+                                        <input
+                                            type="text"
+                                            value={done}
+                                            className="focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                                            onChange={(e) => setDone(e.target.value)}
+                                            onBlur={() => savecolumnToDatabase(done, 3, board_id)}
+                                        />
+                                    </div>
+
+                                    {/* Render saved cards */}
+                                    {savedData[3].map((task, index) => (
+                                        <div
+                                            className="px-4 flex flex-col py-2"
+                                            key={index}
+                                            draggable
+                                            onDragStart={(e) => onDragStart(index, task, 3)}
+                                            onClick={() => onEdit(task.id)}
+                                        >
+                                            <div className="  shadow rounded-lg bg-white text-black p-2 flex flex-row justify-between">
+                                                <div className="title"> {task.title}</div>
+                                                {task.user?.full_name && <div className="w-8 h-8 bg-[#aabeed] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                                                    {getInitials(task.user?.full_name || "")}
+                                                </div>}
+
+
+                                            </div>
                                         </div>
-                                    )}
+                                    ))}
 
-                                    {activeCard === 3 && (
-                                        <div className="wrapper px-4 flex flex-col">
-                                            <div className="input">
-                                                <input
-                                                    type="text"
-                                                    value={inputValues[3]}
-                                                    onChange={(e) => handleInputChange(e, 3)}
-                                                    className="border-2 border-[#4CAF50] 
+                                    <div className="mt-auto">
+                                        {activeCard !== 3 && (
+                                            <div className="btn px-4 py-2">
+                                                <button
+                                                    className="flex items-center gap-1 h-9 px-2 text-gray-500 font-semibold rounded-lg hover:bg-gray-300 w-full"
+                                                    onClick={() => setActiveCard(3)}
+                                                >
+                                                    <Plus /> Add a Card
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {activeCard === 3 && (
+                                            <div className="wrapper px-4 flex flex-col">
+                                                <div className="input">
+                                                    <input
+                                                        type="text"
+                                                        value={inputValues[3]}
+                                                        onChange={(e) => handleInputChange(e, 3)}
+                                                        className="border-2 border-[#4CAF50] 
                         focus:border-none hover:border-none 
                         w-full h-10 rounded-lg p-2 focus:outline-none 
                         bg-white shadow-sm"
-                                                />
+                                                    />
+                                                </div>
+                                                <div className="btn flex flex-row gap-2 py-2">
+                                                    <button
+                                                        className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
+                                                        onClick={() => handleAdd(3)}
+                                                    >
+                                                        Add Card
+                                                    </button>
+                                                    <button onClick={() => setActiveCard(null)}>
+                                                        <X />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div className="btn flex flex-row gap-2 py-2">
-                                                <button
-                                                    className="flex items-center gap-1 h-9 px-2 bg-[#4CAF50] text-white rounded"
-                                                    onClick={() => handleAdd(3)}
-                                                >
-                                                    Add Card
-                                                </button>
-                                                <button onClick={() => setActiveCard(null)}>
-                                                    <X />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </div> </>}
+                            </div> </>}
                     {!currentBoard && (
                         <div className="flex justify-center items-center min-h-[60vh]">
                             <button
