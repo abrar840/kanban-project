@@ -1,8 +1,9 @@
 import React, { useState, useEffect, use } from "react";
 import { ChevronRight, X } from "lucide-react";
 import api from "@/lib/axios";
-
+import { useLocation } from "react-router-dom";
 const SideBar = ({ open, onClose, setBoard, currentboard }) => {
+    const location = useLocation();
     const [boards, setBoards] = useState([]);
     const [boardsOpen, setBoardsOpen] = useState(false);
 
@@ -14,7 +15,7 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
     const [showInput, setShowInput] = useState(false);
     const [contributorEmail, setContributorEmail] = useState("");
     const [currentBoardId, setCurrentBoardId] = useState(currentboard);
-    const[refresh,setRefresh]=useState(false);
+    const [refresh, setRefresh] = useState(false);
     const handleLogout = () => {
         localStorage.removeItem("tokens");
         localStorage.removeItem("selectedBoardId");
@@ -45,11 +46,11 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
             }
         };
 
-      
+
 
         fetchBoards();
         fetchContributions();
-      
+
 
         if (currentBoardId == null) {
             const savedId = localStorage.getItem("selectedBoardId");
@@ -59,9 +60,9 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
 
 
 
-   useEffect(() => {
+    useEffect(() => {
 
-const fetchContributors = async () => {
+        const fetchContributors = async () => {
             try {
                 const res = await api.get(`/get-contributors/${currentBoardId}`); // Replace with currentBoardId if dynamic
                 setContributors(res.data);
@@ -69,10 +70,10 @@ const fetchContributors = async () => {
                 console.error("Failed to fetch contributors", err);
             }
         };
-      
-  fetchContributors();
 
-}, [currentBoardId,refresh]);
+        fetchContributors();
+
+    }, [currentBoardId, refresh]);
 
 
 
@@ -94,11 +95,11 @@ const fetchContributors = async () => {
 
         } catch (err) {
             const errorMessage = err.response?.data?.detail || "Something went wrong";
-        alert(errorMessage);
+            alert(errorMessage);
         }
 
 
-        
+
     };
 
     return (
@@ -119,41 +120,45 @@ const fetchContributors = async () => {
             </div>
 
             <div className="p-6 flex-1 overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-6 text-blue-900">Dashboard</h2>
-                <ul className="space-y-4">
+                <h2 className="text-2xl font-bold mb-6 text-blue-900"><a href="/dashboard">Dashboard</a>
+                </h2>
+                <ul className="space-y-4 items-start flex flex-col">
                     {/* My Boards Dropdown */}
-                    <li>
-                        <button
-                            className="flex items-center justify-between w-full text-gray-700 hover:text-blue-600 font-semibold py-2 px-3 rounded transition"
-                            onClick={() => setBoardsOpen(!boardsOpen)}
-                        >
-                            <span>My Boards</span>
-                            <ChevronRight
-                                size={20}
-                                className={`transition-transform ${boardsOpen ? "rotate-90" : ""}`}
-                                color="#334155"
-                            />
-                        </button>
-                        {boardsOpen && (
-                            <div className="ml-4 mt-2">
-                                {boards.length === 0 ? (
-                                    <p className="text-sm text-gray-400">No record found</p>
-                                ) : (
-                                    <ul className="space-y-1">
-                                        {boards.map((board) => (
-                                            <li
-                                                key={board.id}
-                                                className="py-1 px-3 rounded cursor-pointer hover:bg-blue-50 text-sm font-medium text-gray-700"
-                                                onClick={() => setCurrentBoard(board.id)}
-                                            >
-                                                {board.name}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                        )}
-                    </li>
+
+                    {location.pathname === '/' &&
+                  <> 
+                        <li>
+                            <button
+                                className="flex items-center justify-between w-full text-gray-700 hover:text-blue-600 font-semibold py-2 px-3 rounded transition"
+                                onClick={() => setBoardsOpen(!boardsOpen)}
+                            >
+                                <span>  My Boards</span>
+                                <ChevronRight
+                                    size={20}
+                                    className={`transition-transform ${boardsOpen ? "rotate-90" : ""}`}
+                                    color="#334155"
+                                />
+                            </button>
+                            {boardsOpen && (
+                                <div className="ml-4 mt-2">
+                                    {boards.length === 0 ? (
+                                        <p className="text-sm text-gray-400">No record found</p>
+                                    ) : (
+                                        <ul className="space-y-1">
+                                            {boards.map((board) => (
+                                                <li
+                                                    key={board.id}
+                                                    className="py-1 px-3 rounded cursor-pointer hover:bg-blue-50 text-sm font-medium text-gray-700"
+                                                    onClick={() => setCurrentBoard(board.id)}
+                                                >
+                                                    {board.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
+                        </li>
 
                     {/* My Contributions Dropdown */}
                     <li>
@@ -253,7 +258,10 @@ const fetchContributors = async () => {
                                 )}
                             </div>
                         )}
-                    </li>
+                    </li> </> }
+
+                    <li className="px-3 text-black"><a href="/dashboard" className="text-black">DashBoard</a></li>
+                    <li className="px-3 text-black"><a href="/" className="text-black">Board</a></li>
                 </ul>
             </div>
 
