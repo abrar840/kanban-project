@@ -7,6 +7,7 @@ import TopBar from "@/components/TopBar"; // ✅ import your TopBar
 import React, { useState } from "react";
 import SideBar from "@/components/SideBar";
 import PrivateRoute from "./components/ProtectedRoute";
+import DashBoard from "./pages/DashBoard";
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [board, setBoard] = useState();
@@ -37,6 +38,14 @@ function App() {
               <PublicRoute>
                 <SignUp />
               </PublicRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              
+                <DashBoard />
+              
             }
           />
         </Routes>
