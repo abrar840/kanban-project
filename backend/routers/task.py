@@ -5,6 +5,8 @@ import models.task as task_model
 import schemas.task as task_schema
 from services.utils import get_current_user
 from models.task import Task
+from typing import List
+
 router = APIRouter()
 
 
@@ -37,9 +39,9 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
 
 
-@router.get("/get-task-by-boardid/{board_id}", response_model=task_schema.TaskResponse)
+@router.get("/get-task-by-boardid/{board_id}", response_model=List[task_schema.TaskResponse])
 def get_task(board_id: int, db: Session = Depends(get_db)):
-    db_task = db.query(task_model.Task).filter(task_model.Task.board_id == board_id).first()
+    db_task = db.query(task_model.Task).filter(task_model.Task.board_id == board_id).all()
     if not db_task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return db_task
