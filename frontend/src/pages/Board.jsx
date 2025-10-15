@@ -117,7 +117,7 @@ const Board = ({ board, setAddMethod }) => {
             });
             if (res) {
                 // alert("saved");
-                setTitle(res.data.name);
+                // setTitle(res.data.name);
             }
         }
 

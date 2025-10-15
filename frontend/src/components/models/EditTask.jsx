@@ -75,7 +75,7 @@ const EditTask = ({ onClose, editid }) => {
             };
 
             await updateItem(updatedTask, editid);
-            alert("Task updated successfully!");
+            
             onClose();
         } catch (err) {
             console.error("Error saving task:", err);
