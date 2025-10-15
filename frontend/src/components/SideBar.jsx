@@ -119,15 +119,16 @@ const fetchContributors = async () => {
             </div>
 
             <div className="p-6 flex-1 overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-6 text-blue-900">Dashboard</h2>
-                <ul className="space-y-4">
+                <h2 className="text-2xl font-bold mb-6 text-blue-900"><a href="/dashboard">Dashboard</a>
+                </h2>
+                <ul className="space-y-4 items-start flex flex-col">
                     {/* My Boards Dropdown */}
                     <li>
                         <button
                             className="flex items-center justify-between w-full text-gray-700 hover:text-blue-600 font-semibold py-2 px-3 rounded transition"
                             onClick={() => setBoardsOpen(!boardsOpen)}
                         >
-                            <span>My Boards</span>
+                            <span>  My Boards</span>
                             <ChevronRight
                                 size={20}
                                 className={`transition-transform ${boardsOpen ? "rotate-90" : ""}`}
@@ -254,6 +255,9 @@ const fetchContributors = async () => {
                             </div>
                         )}
                     </li>
+
+                     <li className="px-3 text-black"><a href="/dashboard" className="text-black">DashBoard</a></li>
+                      <li className="px-3 text-black"><a href="/" className="text-black">Board</a></li>
                 </ul>
             </div>
 
