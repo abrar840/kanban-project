@@ -34,5 +34,6 @@ class UpdateTask(BaseModel):
     description: Optional[str] = None
     user_id:Optional[int] = None
     position: Optional[int] = None
+    board_id:Optional[int] = None
 
  
