@@ -6,6 +6,7 @@ from routers import column
 from routers import task
 from routers import contributor
 from fastapi.middleware.cors import CORSMiddleware
+from routers import websocket  # or whatever path matches your folder
 
 # create database tables 
 Base.metadata.create_all(bind=engine)
@@ -32,6 +33,7 @@ app.include_router(create_board.router, prefix="", tags=["Board"])
 app.include_router(column.router, prefix="", tags=["Column"])
 app.include_router(task.router, prefix="", tags=["Task"])
 app.include_router(contributor.router, prefix="", tags=["Contributor"])
+app.include_router(websocket.router)
 
 @app.get("/")
 def root():
