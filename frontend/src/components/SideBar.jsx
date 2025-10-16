@@ -88,7 +88,7 @@ const SideBar = ({ open, onClose, setBoard, currentboard }) => {
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl rounded-l-2xl flex flex-col justify-between z-40 transition-transform duration-300
+      className={`fixed top-0 right-0 h-full w-72 bg-white shadow-2xl rounded-l-2xl flex flex-col justify-between z-[9999] transition-transform duration-300
             ${open ? "translate-x-0" : "translate-x-full"}`}
       style={{ willChange: "transform", borderLeft: "1px solid #e5e7eb" }}
     >
