@@ -68,11 +68,19 @@ const Board = ({ board, setAddMethod }) => {
         }));
       } else if (data.type === "task_updated") {
         setSavedData((prev) => {
+          // First check if task already exists in the destination column
+          const alreadyInDestination = prev[data.task.position].some(
+            (task) => task.id === data.task.id
+          );
+
+          if (alreadyInDestination) {
+            // Task already moved by local update, ignore websocket duplicate
+            return prev;
+          }
+
           for (const pos of [1, 2, 3]) {
             const index = prev[pos].findIndex(
-              (task) =>
-                task.id === data.task.id &&
-                task.column_id === data.task.column_id
+              (task) => task.id === data.task.id
             );
 
             if (index !== -1) {
@@ -163,10 +171,13 @@ const Board = ({ board, setAddMethod }) => {
     const { cardIndex, task, fromColumn } = draggedCard;
     if (fromColumn === toColumn) return;
 
+    // Optimistically update UI
     setSavedData((prev) => {
       const fromList = [...prev[fromColumn]];
       const [movedCard] = fromList.splice(cardIndex, 1); // remove card from old list
 
+      // Update the task's position property
+      movedCard.position = toColumn;
       const toList = [...prev[toColumn], movedCard]; // add card to new list
 
       return {
@@ -175,6 +186,7 @@ const Board = ({ board, setAddMethod }) => {
         [toColumn]: toList,
       };
     });
+
     if (draggedCard) {
       console.log("eee", draggedCard.task);
 
@@ -202,10 +214,14 @@ const Board = ({ board, setAddMethod }) => {
         total_cols: 3,
         id: currentBoard,
       });
+
+
       if (res) {
         // alert("saved");
         setTitle(res.data.name);
       }
+        
+        
     } else {
       try {
         const res = await api.post("/add-board", {
@@ -216,9 +232,18 @@ const Board = ({ board, setAddMethod }) => {
           // alert("saved");
           setTitle(res.data.name);
           setCurrentBoard(res.data.id);
-
+          setBoard_id(res.data.id);
+          // Clear old board data
+          setSavedData({
+            1: [],
+            2: [],
+            3: [],
+          });
+          setAllColumns([]);
+          // Save board id to localStorage
+          localStorage.setItem("selectedBoardId", res.data.id);
+          // Trigger data refresh to load new board
           setDataChangeTrigger((prev) => prev + 1);
-          // Save board id to localStorage after creation
         }
       } catch (err) {
         console.error("Failed to save title:", err);
@@ -230,7 +255,6 @@ const Board = ({ board, setAddMethod }) => {
   const savecolumnToDatabase = async (newTitle, position, board_id) => {
     if (!currentBoard) {
       saveTitleToDatabase(title);
-      setDataChangeTrigger((prev) => prev + 1);
     }
 
     try {
@@ -241,8 +265,7 @@ const Board = ({ board, setAddMethod }) => {
       });
       if (res) {
         // alert("saved");
-        setTitle(res.data.name);
-        setDataChangeTrigger((prev) => prev + 1);
+        // Don't trigger data refresh here - let the caller handle it
       }
     } catch (err) {
       console.error("Failed to save title:", err);
@@ -252,17 +275,28 @@ const Board = ({ board, setAddMethod }) => {
 
   const savetaskToDatabase = async (Title, position, board_id) => {
     try {
-      const column = allColumns.find((col) => col.position === position);
+      let column = allColumns.find((col) => col.position === position);
 
       if (!column) {
-        savecolumnToDatabase(todo, 1, board_id);
-        savecolumnToDatabase(inprogress, 2, board_id);
-        savecolumnToDatabase(done, 3, board_id);
-        setDataChangeTrigger((prev) => prev + 1);
-        console.error("Column not found for position:", position);
+        // Create all columns and wait for them
+        await Promise.all([
+          savecolumnToDatabase(todo, 1, board_id),
+          savecolumnToDatabase(inprogress, 2, board_id),
+          savecolumnToDatabase(done, 3, board_id),
+        ]);
 
-        console.error("Column not found for position:", allColumns);
-        return;
+        // Fetch fresh board data to get column IDs
+        const res = await api.get(`/get-board/${board_id}`);
+        const columns = res.data.columns;
+        setAllColumns(columns);
+
+        // Find the column again with fresh data
+        column = columns.find((col) => col.position === position);
+
+        if (!column) {
+          console.error("Column still not found after creation:", position);
+          return;
+        }
       }
 
       const res = await api.post("/create-task", {
@@ -296,56 +330,61 @@ const Board = ({ board, setAddMethod }) => {
   }, [dataChangeTrigger, currentBoard]);
 
   useEffect(() => {
-    // If board prop is not provided, try to get board id from localStorage
-    let boardToUse = board;
-    if (!boardToUse) {
-      const storedBoardId = localStorage.getItem("selectedBoardId");
-      if (storedBoardId) {
-        boardToUse = storedBoardId;
-      }
+    // Check localStorage first - if it doesn't exist, board has been deleted
+    const storedBoardId = localStorage.getItem("selectedBoardId");
+
+    // If no stored board ID, don't use the board prop (board might be stale after deletion)
+    if (!storedBoardId || storedBoardId === "null") {
+      // Board was deleted or doesn't exist
+      return;
     }
-    setCurrentBoard(boardToUse);
-    setBoard_id(boardToUse);
 
-    const fetchBoardData = async () => {
-      try {
-        const res = await api.get(`/get-board/${boardToUse}`);
-        const data = res.data;
-        setCurrentBoardData(data);
-        setTitle(data.name);
-        const columns = data.columns;
-        setAllColumns(columns);
+    // Use board prop if available, otherwise use stored ID
+    let boardToUse = board || storedBoardId;
 
-        const todoColumn = columns.find((col) => col.position === 1) || null;
-        const inprogressColumn =
-          columns.find((col) => col.position === 2) || null;
-        const doneColumn = columns.find((col) => col.position === 3) || null;
-
-        setTodo(todoColumn?.title || "ToDo");
-        setInprogress(inprogressColumn?.title || "In-Progress");
-        setDone(doneColumn?.title || "Done");
-
-        setAllColumns(columns);
-
-        const newSavedData = {
-          1: [],
-          2: [],
-          3: [],
-        };
-        columns.forEach((col) => {
-          col.tasks?.forEach((task) => {
-            if (newSavedData[task.position]) {
-              newSavedData[task.position].push(task);
-            }
-          });
-        });
-        setSavedData(newSavedData);
-      } catch (err) {
-        console.error("Failed to fetch board data:", err);
-      }
-    };
-
+    // Only update state if boardToUse is valid
     if (boardToUse) {
+      setCurrentBoard(boardToUse);
+      setBoard_id(boardToUse);
+
+      const fetchBoardData = async () => {
+        try {
+          const res = await api.get(`/get-board/${boardToUse}`);
+          const data = res.data;
+          setCurrentBoardData(data);
+          setTitle(data.name);
+          const columns = data.columns;
+          setAllColumns(columns);
+
+          const todoColumn = columns.find((col) => col.position === 1) || null;
+          const inprogressColumn =
+            columns.find((col) => col.position === 2) || null;
+          const doneColumn = columns.find((col) => col.position === 3) || null;
+
+          setTodo(todoColumn?.title || "ToDo");
+          setInprogress(inprogressColumn?.title || "In-Progress");
+          setDone(doneColumn?.title || "Done");
+
+          setAllColumns(columns);
+
+          const newSavedData = {
+            1: [],
+            2: [],
+            3: [],
+          };
+          columns.forEach((col) => {
+            col.tasks?.forEach((task) => {
+              if (newSavedData[task.position]) {
+                newSavedData[task.position].push(task);
+              }
+            });
+          });
+          setSavedData(newSavedData);
+        } catch (err) {
+          console.error("Failed to fetch board data:", err);
+        }
+      };
+
       fetchBoardData();
     }
   }, [board, dataChangeTrigger]);
@@ -362,6 +401,13 @@ const Board = ({ board, setAddMethod }) => {
       alert("board deleted");
       setCurrentBoard(null);
       setBoard_id(null);
+      setTitle("Title");
+      setSavedData({
+        1: [],
+        2: [],
+        3: [],
+      });
+      setAllColumns([]);
       localStorage.removeItem("selectedBoardId");
       setDataChangeTrigger((prev) => prev + 1);
       setMenuOpen(false);
